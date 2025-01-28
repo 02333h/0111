@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>微信新年祝福</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: linear-gradient(to bottom, #000000, #330033);
+        }
+
+        canvas {
+            display: block;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            z-index: 10;
+        }
+
+        .message h1 {
+            color: #FF0000;
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+
+        .message p {
+            color: #333333;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <div class="message">
+        <h1>新年快乐</h1>
+        <p>祝您在新的一年里万事如意，心想事成！</p>
+    </div>
+
+    <!-- 添加背景音乐 -->
+    <audio id="backgroundMusic" autoplay loop>
+        <source src="./hua-zuo-yan-hua-wei-ni-zhui-luo.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <!-- 添加点击音效 -->
+    <audio id="clickSound" preload="auto">
+        <source src="click-sound.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.radius = Math.random() * 2 + 1;
+                this.velocityX = (Math.random() - 0.5) * 8;
+                this.velocityY = (Math.random() - 0.5) * 8;
+                this.alpha = 1;
+            }
+
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                ctx.restore();
+            }
+
+            update() {
+                this.x += this.velocityX;
+                this.y += this.velocityY;
+                this.alpha -= 0.02;
+            }
+        }
+
+        function randomColor() {
+            const colors = ['#ff0000', '#ff7f00', '#ffff00', '#00ff00', '#0000ff', '#4b0082', '#8f00ff'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        let particles = [];
+
+        function createFirework(x, y) {
+            for (let i = 0; i < 100; i++) {
+                particles.push(new Particle(x, y, randomColor()));
+            }
+        }
+
+        function animate() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            particles = particles.filter(p => p.alpha > 0);
+
+            particles.forEach(particle => {
+                particle.update();
+                particle.draw();
+            });
+
+            requestAnimationFrame(animate);
+        }
+
+        canvas.addEventListener('click', (e) => {
+            createFirework(e.clientX, e.clientY);
+            document.getElementById('clickSound').play();
+        });
+
+        animate();
+    </script>
+</body>
+</html>
